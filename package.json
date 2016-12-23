@@ -1,0 +1,36 @@
+{
+  "name": "xraytv-video-generator",
+  "version": "0.1.0",
+  "description": "AAAAAA",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next",
+    "dev-api": "nodemon --exec 'npm run api'",
+    "api": "micro -p 4000 api",
+    "build": "next build",
+    "start": "next start",
+    "test": "tape test/**/*-test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jesseditson/xraytv-video-generator.git"
+  },
+  "author": "Jesse Ditson <jesse.ditson@gmail.com>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/jesseditson/xraytv-video-generator/issues"
+  },
+  "homepage": "https://github.com/jesseditson/xraytv-video-generator#readme",
+  "dependencies": {
+    "fluent-ffmpeg": "^2.1.0",
+    "fs-router": "^0.1.0",
+    "isomorphic-fetch": "^2.2.1",
+    "load-secrets": "^0.1.2",
+    "micro": "^6.1.0",
+    "mkdirp": "^0.5.1",
+    "next": "^1.2.3",
+    "npmlog": "^4.0.2",
+    "store": "^1.3.20",
+    "ytdl-core": "^0.7.21"
+  }
+}
