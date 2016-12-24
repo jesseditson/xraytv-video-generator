@@ -5,6 +5,7 @@ const mkdirp = require('mkdirp')
 const { json } = require('micro')
 const joinVideos = require('../lib/join-videos')
 
+const unlink = p => new Promise(r => fs.unlink(p, r))
 const exists = p => new Promise(r => fs.exists(p, r))
 
 const VIDEO_DIR = path.join(__dirname, '../tmp/videos')
@@ -22,6 +23,11 @@ module.exports.POST = async function generateVideo(req, res) {
   const videoPath = `/static/videos/${videoName}`
   const skip = await exists(generatedFile)
   if (skip) return { video: videoPath }
-  const generated = await joinVideos(slices, generatedFile)
+  await joinVideos(slices, generatedFile)
+  await Promise.all(data.slices.map(async function(slice) {
+    log.silly(`cleaning up ${slice}`)
+    await unlink(path.join(VIDEO_DIR, slice))
+    await unlink(path.join(VIDEO_DIR, slice.replace('-slice', '')))
+  }))
   return { video: videoPath }
 }

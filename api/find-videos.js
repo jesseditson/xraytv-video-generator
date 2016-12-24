@@ -2,7 +2,8 @@ const log = require('npmlog')
 const { send } = require('micro')
 const findVideos = require('../lib/find-videos')
 
-module.exports = async function generateVideo(req, res) {
+module.exports = async function find(req, res) {
+  log.silly('finding with ', req.query)
   const search = encodeURIComponent(req.query.q).replace(/%20/g, '+')
   const numVideos = req.query.num_vids
   log.silly(`finding videos matching ${search}`)

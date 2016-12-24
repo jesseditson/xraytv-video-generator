@@ -37,17 +37,20 @@ export default class extends React.Component {
     const r = await fetch(`${API_HOST}/download-video/${id}`)
     const json = await r.json()
     const video = json.video
-    store.set(`videos-${id}`, video)
+    // store.set(`videos-${id}`, video)
     this.setState(state => {
       state.videos[id].video = video
       return state
     })
   }
-  async sliceVideo(id) {
-    const r = await fetch(`${API_HOST}/slice-video/${id}?min_length=${this.state.minLength}&max_length=${this.state.maxLength}`)
+  async sliceVideo(id, idx) {
+    const factor = !((idx+1) % 5) ? 5 : 0.7
+    const min = this.state.minLength * factor
+    const max = this.state.maxLength * factor
+    const r = await fetch(`${API_HOST}/slice-video/${id}?min_length=${min}&max_length=${max}`)
     const json = await r.json()
     const slice = json.slice
-    store.set(`videos-${id}-slice`, slice)
+    // store.set(`videos-${id}-slice`, slice)
     this.setState(state => {
       state.videos[id].slice = slice
       return state
@@ -57,9 +60,9 @@ export default class extends React.Component {
     this.setState({ videos })
     const downloadVideo = this.downloadVideo.bind(this)
     const sliceVideo = this.sliceVideo.bind(this)
-    await Promise.all(Object.keys(videos).map(async function(v) {
-      await downloadVideo(v)
-      await sliceVideo(v)
+    await Promise.all(Object.keys(videos).map(async function(v, idx) {
+      await downloadVideo(v, idx)
+      await sliceVideo(v, idx)
     }))
     await this.generateVideo()
   }
@@ -78,19 +81,25 @@ export default class extends React.Component {
     e.preventDefault()
     if (this.state.term.length) {
       this.setState({ loading: true, error: null })
-      const response = await fetch(`${API_HOST}/find-videos?q=${this.state.term}&num_vids=${this.state.numVideos}`)
-      const json = await response.json()
-      const videos = json.videos.reduce((o, id) => {
-        o[id] = { id }
-        return o
-      }, {})
-      store.set('videoIDs', json.videos)
-      await this.sliceVideos(videos)
+      try {
+        const response = await fetch(`${API_HOST}/find-videos?q=${this.state.term}&num_vids=${this.state.numVideos}`)
+        const json = await response.json()
+        const videos = json.videos.reduce((o, id) => {
+          o[id] = { id }
+          return o
+        }, {})
+        store.set('videoIDs', json.videos)
+        await this.sliceVideos(videos)
+      } catch (e) {
+        this.setState({ error: e.message, stack: e.stack })
+      }
       this.setState({ loading: false })
     }
   }
   updateVal(key, e) {
-    this.setState({ [key]: e.target.value })
+    const val = e.target.value
+    store.set(key, val)
+    this.setState({ [key]: val })
   }
   error() {
     if (!this.state.error) return null
@@ -113,15 +122,15 @@ export default class extends React.Component {
           <button type="submit">go</button>
         </li>
         <li>
-          <input type="range" onChange={this.updateVal.bind(this, 'numVideos')} value={this.state.numVideos} min="10" max="50" step="1"/>
+          <input type="range" onChange={this.updateVal.bind(this, 'numVideos')} value={this.state.numVideos} min="10" max="200" step="1"/>
           <label>{this.state.numVideos} videos</label>
         </li>
         <li>
-          <input type="range" onChange={this.updateVal.bind(this, 'minLength')} value={this.state.minLength} min="100" max="3000" step="50"/>
+          <input type="range" onChange={this.updateVal.bind(this, 'minLength')} value={this.state.minLength} min="50" max="3000" step="50"/>
           <label>Minimum {this.state.minLength}ms</label>
         </li>
         <li>
-          <input type="range" onChange={this.updateVal.bind(this, 'maxLength')} value={this.state.maxLength} min="300" max="3000" step="50"/>
+          <input type="range" onChange={this.updateVal.bind(this, 'maxLength')} value={this.state.maxLength} min="150" max="3000" step="50"/>
           <label>Maximum {this.state.maxLength}ms</label>
         </li>
       </ul>

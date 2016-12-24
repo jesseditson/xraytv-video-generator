@@ -3,9 +3,13 @@ const path = require('path')
 const log = require('npmlog')
 const mkdirp = require('mkdirp')
 const sliceVideo = require('../../lib/slice-video')
+const reverseVideo = require('../../lib/reverse-video')
 
 const VIDEO_DIR = path.join(__dirname, '../../tmp/videos')
 mkdirp.sync(VIDEO_DIR)
+
+const randomBool = () => Math.random() > 0.3
+const copy = (p, o) => new Promise(r => fs.rename(p, o, r))
 
 async function slice(id, minLength, maxLength, retries=0) {
   const sliceName = `${id}-slice.mp4`
@@ -13,6 +17,9 @@ async function slice(id, minLength, maxLength, retries=0) {
   const slicePath = path.join(VIDEO_DIR, sliceName)
   log.info(`slicing ${id}`)
   await sliceVideo(vidPath, slicePath, minLength, maxLength)
+  if (randomBool()) {
+    await reverseVideo(slicePath, slicePath)
+  }
   log.info(`${id} slice saved to ${slicePath}`)
   return sliceName
 }
