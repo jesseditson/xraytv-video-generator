@@ -2,6 +2,8 @@ import React from 'react'
 import Head from 'next/head'
 import 'glamor/reset'
 
+const API_HOST = process.env.API_HOST
+
 export default (props) => (
   <div className="layout">
     <Head>
@@ -13,5 +15,6 @@ export default (props) => (
       */}
     </Head>
     {props.children}
+    <script dangerouslySetInnerHTML={{ __html: `window.env = ${JSON.stringify({ API_HOST })}` }}/>
   </div>
 )

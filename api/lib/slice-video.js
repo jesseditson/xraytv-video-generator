@@ -46,9 +46,10 @@ module.exports = async function sliceVideo(path, out, min=500, max=1200) {
         .seekInput(seek)
         .duration(size)
         // .size('1024x576')
-        // ffmpeg -ss 295.5888237255273 -i /Users/jesseditson/code/jesseditson/xraytv-video-generator/tmp/videos/0yDcz2r-9QY.mp4 -y -filter:v scale=w='if(gt(a,1.7777777777777777),1024,trunc(576*a/2)*2)':h='if(lt(a,1.7777777777777777),576,trunc(1024/a/2)*2)',pad=w=1024:h=576:x='if(gt(a,1.7777777777777777),0,(1024-iw)/2)':y='if(lt(a,1.7777777777777777),0,(576-ih)/2)':color=black -t 0.3122249395734807 -vf scale=1024x576,setsar=1:1 /Users/jesseditson/code/jesseditson/xraytv-video-generator/tmp/videos/0yDcz2r-9QY-slice.mp4
+        // ffmpeg -ss 295.5888237255273 -i /Users/jesseditson/code/jesseditson/xraytv-video-generator/tmp/videos/0yDcz2r-9QY.mp4 -y -filter:v scale=w='if(gt(a,1.7777777777777777),1024,trunc(576*a/2)*2)':h='if(lt(a,1.7777777777777777),576,trunc(1024/a/2)*2)',pad=w=1024:h=576:x='if(gt(a,1.7777777777777777),0,(1024-iw)/2)':y='if(lt(a,1.7777777777777777),0,(576-ih)/2)':color=black,setsar=1:1 -t 0.3122249395734807 -vf scale=1024x576 /Users/jesseditson/code/jesseditson/xraytv-video-generator/tmp/videos/0yDcz2r-9QY-slice.mp4
         .outputOptions(
-          '-vf', 'scale=1024x576,setsar=1:1'
+          '-y',
+          '-filter:v', "scale=w='if(gt(a,1.7777777777777777),1024,trunc(576*a/2)*2)':h='if(lt(a,1.7777777777777777),576,trunc(1024/a/2)*2)',pad=w=1024:h=576:x='if(gt(a,1.7777777777777777),0,(1024-iw)/2)':y='if(lt(a,1.7777777777777777),0,(576-ih)/2)':color=black,setsar=1:1"
         )
         .autopad(color)
         .on('start', (cmd) => log.info(cmd))

@@ -1,9 +1,11 @@
 import React from 'react'
 import store from 'store'
+import css from 'next/css'
 import Layout from '../components/Layout'
 import 'isomorphic-fetch'
 
-const API_HOST = 'http://localhost:4000'
+const env = typeof window !== 'undefined' ? window.env : process.env
+const API_HOST = env.API_HOST || 'http://localhost:4000'
 
 export default class extends React.Component {
   constructor(props) {
@@ -34,6 +36,7 @@ export default class extends React.Component {
     return Object.keys(vids).map(k => vids[k].slice).filter(v => !!v)
   }
   async downloadVideo(id) {
+    console.log(API_HOST)
     const r = await fetch(`${API_HOST}/download-video/${id}`)
     const json = await r.json()
     const video = json.video
@@ -73,7 +76,7 @@ export default class extends React.Component {
       body: JSON.stringify({ name: this.state.term, slices })
     })
     const json = await r.json()
-    const video = json.video
+    const video = `${API_HOST}/video/${json.video}`
     store.set('video', video)
     this.setState({ video })
   }
@@ -122,7 +125,7 @@ export default class extends React.Component {
           <button type="submit">go</button>
         </li>
         <li>
-          <input type="range" onChange={this.updateVal.bind(this, 'numVideos')} value={this.state.numVideos} min="10" max="200" step="1"/>
+          <input type="range" onChange={this.updateVal.bind(this, 'numVideos')} value={this.state.numVideos} min="2" max="200" step="1"/>
           <label>{this.state.numVideos} videos</label>
         </li>
         <li>
@@ -158,8 +161,13 @@ export default class extends React.Component {
     })
   }
   resetButton() {
+    const buttonStyles = css({
+      position: 'absolute',
+      bottom: 0,
+      left: 0
+    })
     if (!this.state.video) return null
-    return (<button name="reset" onClick={this.reset.bind(this)} value="reset">reset</button>)
+    return (<button name="reset" style={buttonStyles} onClick={this.reset.bind(this)} value="reset">reset</button>)
   }
   render() {
     return (<Layout page="index">

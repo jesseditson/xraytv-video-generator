@@ -1,14 +1,12 @@
 {
-  "name": "xraytv-video-generator",
+  "name": "xraytv-video-generator-api",
   "version": "0.1.0",
-  "description": "AAAAAA",
+  "description": "make some videos",
   "main": "index.js",
   "scripts": {
-    "dev": "next",
-    "dev-api": "nodemon --exec 'npm run api'",
-    "api": "micro -p 4000 api",
-    "build": "next build",
-    "start": "next start",
+    "dev": "nodemon --exec 'micro -p 4000'",
+    "start": "micro -p 80",
+    "deploy": "now -e XRAYTV_VIDEO_GENERATOR_GOOGLE_KEY=@xray-google-key -e NODE_ENV=production",
     "test": "tape test/**/*-test.js"
   },
   "repository": {
@@ -28,9 +26,10 @@
     "load-secrets": "^0.1.2",
     "micro": "^6.1.0",
     "mkdirp": "^0.5.1",
-    "next": "^1.2.3",
     "npmlog": "^4.0.2",
-    "store": "^1.3.20",
     "ytdl-core": "^0.7.21"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }
